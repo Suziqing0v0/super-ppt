@@ -1,3 +1,6 @@
 .env
 __pycache__/
 *.pptx
+
+# VS Code 本地设置
+.vscode/

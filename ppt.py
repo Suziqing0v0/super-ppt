@@ -3,6 +3,7 @@ import json
 from openai import OpenAI
 from pptx import Presentation
 import sys
+from layout_clf import classify_layout
 
 if len(sys.argv) < 2:
     print('用法:python ppt.py "主题"')
@@ -61,12 +62,17 @@ for attempt in range(2):
 if outline is None:
     print("两次 都没成功，先停下")
 else:
+    total = len(outline["页"])
     prs = Presentation()
 
-    for page in outline["页"]:
-        layout = prs.slide_layouts[LAYOUTS.get(page["类型"], 1)]
+    for i, page in enumerate(outline["页"], start=1):
+        is_last = (i == total)
+        predicted = classify_layout(i, page["标题"], is_last)
+        print(f"第 {i} 页「{page['标题']}」：模型={page['类型']}  分类器={predicted}")
+
+        layout = prs.slide_layouts[LAYOUTS.get(predicted, 1)]
         slide = prs.slides.add_slide(layout)
-        slide.shapes.title.text = page["标题"]
+        slide.shapes.title.text = page["标题"] 
 
         tf = slide.placeholders[1].text_frame
         if page["要点"]:
@@ -77,3 +83,7 @@ else:
     out_name = f"{topic}.pptx"
     prs.save(out_name)
     print(f"已生成 {out_name}，共 {len(outline['页'])} 页")
+
+
+
+
