@@ -6,6 +6,7 @@ import sys
 from layout_clf import classify_layout
 import argparse
 import rag
+from evaluate import evaluate_outline
 
 #argparse 读取 topic / --doc
 parser = argparse.ArgumentParser()
@@ -148,6 +149,13 @@ def ask_llm(topic, doc_path, context, allowed_sources):
 
 # 调用 ask_llm
 outline = None
+eval_report = None
+expected = {
+    "max_points_per_page": 4,
+    "max_chars_per_point": 80,
+}
+eval_allowed_sources = set(allowed_sources) if doc_path is not None else None
+
 for attempt in range(2):
     text = ask_llm(topic, doc_path, context, allowed_sources)
 
@@ -157,25 +165,14 @@ for attempt in range(2):
         print(f"第 {attempt + 1} 次 JSON 格式错误，重试")
         continue
 
-    if doc_path is not None:
-        allowed = set(allowed_sources)
-        bad_pages = []
-
-        for page_no, page in enumerate(candidate.get("页", []), start=1):
-            sources = page.get("来源")
-            if not isinstance(sources, list) or not sources:
-                bad_pages.append((page_no, "缺少来源"))
-                continue
-
-            invalid = [source for source in sources if source not in allowed]
-            if invalid:
-                bad_pages.append((page_no, invalid))
-
-        if bad_pages:
-            print(f"第 {attempt + 1} 次来源不合法：{bad_pages}")
-            continue
+    report = evaluate_outline(candidate, expected, eval_allowed_sources)
+    if not report["passed"]:
+        messages = "; ".join(issue["message"] for issue in report["issues"])
+        print(f"第 {attempt + 1} 次评测未通过：{messages}")
+        continue
 
     outline = candidate
+    eval_report = report
     break
 
 # ===== 第二半：照着大纲画文件 =====
@@ -207,6 +204,14 @@ else:
     outline_name = f"{topic}.outline.json"
     with open(outline_name, "w", encoding="utf-8") as f:
         json.dump(outline, f, ensure_ascii=False, indent=2)
+    eval_name = f"{topic}.eval.json"
+    with open(eval_name, "w", encoding="utf-8") as f:
+        json.dump(eval_report, f, ensure_ascii=False, indent=2)
+    print(
+        f"评测：passed={eval_report['passed']} "
+        f"score={eval_report['score']} "
+        f"issues={len(eval_report['issues'])}"
+    )
     print(f"已生成 {out_name}，共 {len(outline['页'])} 页")
 
 
