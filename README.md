@@ -1,55 +1,119 @@
 # Super PPT
 
-输入一个主题，自动生成一份 5 页的 PPT 文件。
+输入一个主题，自动生成一份 5 页 PPT。
 
-## 怎么装
+Super PPT 支持两种模式：
+
+- **主题模式**：根据主题自由生成大纲和 PPT；
+- **RAG 文档模式**：先从 Markdown/TXT 文档中检索资料，再基于资料生成 PPT，并记录每页来源。
+
+## 安装
 
 需要 Python 3.10 以上。
 
+```powershell
+cd D:\ai-learning\super-ppt
+python -m pip install -r requirements.txt
 ```
-pip install -r requirements.txt
-```
 
-## 怎么设 Key
+## 设置 API Key
 
-1. 到 `platform.deepseek.com` 注册，创建一个 API Key
-2. 把它存进名为 `DEEPSEEK_API_KEY` 的环境变量
+1. 到 `platform.deepseek.com` 创建 API Key；
+2. 将 Key 保存到名为 `DEEPSEEK_API_KEY` 的环境变量中。
 
-Windows（PowerShell，只对当前窗口有效）：
+PowerShell，只对当前窗口有效：
 
-```
+```powershell
 $env:DEEPSEEK_API_KEY = "sk-你的Key"
 ```
 
-想永久保存（新开窗口也有效）：
+PowerShell，永久保存：
 
-```
+```powershell
 setx DEEPSEEK_API_KEY "sk-你的Key"
 ```
 
 macOS / Linux：
 
-```
+```bash
 export DEEPSEEK_API_KEY="sk-你的Key"
 ```
 
-Key 只放在环境变量里，不要写进代码，也不要提交到 Git。
+Key 只应保存在环境变量中，不要写进代码或提交到 Git。
 
-## 怎么用
+## 使用
 
-```
+### 1. 按主题生成
+
+```powershell
 python ppt.py "给大三学生讲什么是伪随机数"
 ```
 
-输出：
+程序直接让 DeepSeek 生成 5 页大纲，再渲染为 PPT。
 
-```
-已生成 给大三学生讲什么是伪随机数.pptx，共 5 页
+### 2. 基于文档生成
+
+```powershell
+python ppt.py "热力学第二定律" --doc "资料.md"
 ```
 
-生成的文件用 PowerPoint 或 WPS 打开即可。
+程序会：
+
+1. 读取指定文档；
+2. 切分并检索最相关的 3 个片段；
+3. 将检索内容加入大纲提示词；
+4. 要求每页记录实际使用的 `chunk` 来源；
+5. 生成 PPT 和大纲 JSON。
+
+查看命令行帮助：
+
+```powershell
+python ppt.py --help
+```
+
+## 输出文件
+
+以主题“热力学第二定律”为例：
+
+```text
+热力学第二定律.pptx
+热力学第二定律.outline.json
+```
+
+- `.pptx`：可直接用 PowerPoint 或 WPS 打开；
+- `.outline.json`：保留标题、副标题、每页要点和来源，便于检查内容依据。
+
+这两类生成文件默认不会提交到 Git。
+
+## RAG 工作方式
+
+当前版本使用轻量、可复现的本地检索：
+
+```text
+Markdown/TXT
+→ 按固定窗口切块并保留重叠
+→ 字符级 TF-IDF 向量
+→ 余弦相似度排序
+→ 取 Top-3 资料
+→ 交给 DeepSeek 生成大纲
+```
+
+RAG 模式只检索用户指定的文档，不会自动联网搜索。
+
+## 项目文件
+
+| 文件 | 作用 |
+|---|---|
+| `ppt.py` | 命令行入口、模型调用、PPT 与大纲渲染 |
+| `rag.py` | 文档读取、切块、TF-IDF 检索和上下文拼接 |
+| `layout_clf.py` | 判断每页使用标题页、要点页或总结页 |
+| `requirements.txt` | Python 依赖 |
 
 ## 已知限制
 
-- 主题里带 `\ / : * ? " < > |` 这些字符时，文件名存不下来
-- 内容是模型生成的，可能有事实错误，也可能出现"主讲人：XXX"这类占位符
+- `--doc` 当前只支持 `.md` 和 `.txt`；
+- 当前检索基于字符 TF-IDF，能利用关键词重合，但不能可靠理解同义表达；
+- 只检索最相关的 3 个片段，长文档可能漏掉其他相关内容；
+- 模型输出仍可能出错，生成后应检查事实和来源；
+- 主题中含 `\ / : * ? " < > |` 时，无法直接用作 Windows 文件名；
+- 调用 DeepSeek API 需要网络，并可能产生费用。

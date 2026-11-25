@@ -1,6 +1,7 @@
 .env
 __pycache__/
 *.pptx
+*.outline.json
 
 # VS Code 本地设置
 .vscode/
