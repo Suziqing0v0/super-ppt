@@ -2,6 +2,9 @@
 
 输入一个主题，自动生成一份 5 页 PPT。
 
+作品集说明见 [`PORTFOLIO.md`](PORTFOLIO.md)，部署步骤见
+[`DEPLOYMENT.md`](DEPLOYMENT.md)。
+
 Super PPT 支持两种模式：
 
 - **主题模式**：根据主题自由生成大纲和 PPT；
@@ -42,6 +45,19 @@ export DEEPSEEK_API_KEY="sk-你的Key"
 Key 只应保存在环境变量中，不要写进代码或提交到 Git。
 
 ## 使用
+
+### Web 界面
+
+```powershell
+python -m streamlit run app.py
+```
+
+打开终端显示的本地地址。页面支持：
+
+- 输入 PPT 主题；
+- 上传 `.md` / `.txt` 文档；
+- 生成并下载 PPT；
+- 查看评测分数、问题、页面来源和大纲 JSON。
 
 ### 1. 按主题生成
 
@@ -123,7 +139,9 @@ RAG 模式只检索用户指定的文档，不会自动联网搜索。
 
 | 文件 | 作用 |
 |---|---|
-| `ppt.py` | 命令行入口、模型调用、PPT 与大纲渲染 |
+| `app.py` | Streamlit Web 界面 |
+| `ppt.py` | 命令行入口 |
+| `generator.py` | 可复用的生成、评测、渲染和保存流程 |
 | `rag.py` | 文档读取、切块、TF-IDF 检索和上下文拼接 |
 | `evaluate.py` | 自动检查大纲结构、质量问题和来源 |
 | `layout_clf.py` | 判断每页使用标题页、要点页或总结页 |
