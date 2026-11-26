@@ -1,5 +1,8 @@
 # Super PPT 作品集
 
+**在线体验**：
+[https://super-ppt-kpcvhtoahtitynwunugtvw.streamlit.app/](https://super-ppt-kpcvhtoahtitynwunugtvw.streamlit.app/)
+
 ## 一句话介绍
 
 根据主题或指定文档，自动生成带每页来源和自动质量检查的 PowerPoint。

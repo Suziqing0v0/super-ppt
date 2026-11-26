@@ -5,8 +5,9 @@
 - **用途**：用于多智能体（OpenCode、Claude Code、Antigravity 等）跨会话、跨工具交接，在新会话启动时快速恢复项目状态、接口契约与协作规范。
 - **信息优先级**：`用户当前明确要求 > 本文件 > 历史文档 / 旧 handoff`。
 - **最后更新**：`2026-11-26`
-- **当前阶段**：第 20 周本地部分已完成；Streamlit Web 应用、三类下载、部署文档和作品集均已落地。**公网部署仍等待用户登录 Streamlit Community Cloud，因此第 20 周尚未完整通过。**
-- **Git 基线**：`main` 分支，HEAD `0a5e855`（`第20周：Streamlit 界面、生成重构与部署文档`）。
+- **当前阶段**：20 周基础线全部完成；Super PPT 已通过 Streamlit Community Cloud 公网验证。
+- **公网应用**：https://super-ppt-kpcvhtoahtitynwunugtvw.streamlit.app/
+- **Git 代码基线**：`main` 分支 `fbae5b2`（公网源码基线）；后续仅同步文档与最终状态。
 
 ---
 
@@ -102,7 +103,7 @@
 | Day 100 | Streamlit 基础输入界面（不调 API） | `ai-learning\homework\week20\day100_streamlit_basics.py` | 通过 |
 | Day 101 | 抽离核心生成逻辑 | `generator.py` + CLI 薄入口 | 通过 |
 | Day 102 | Streamlit 接入与下载 | `app.py` | 通过，真实网页生成 `score=100` |
-| Day 103 | 部署说明与作品集 | 依赖、README、`DEPLOYMENT.md`、`PORTFOLIO.md` | 本地部分完成；公网部署待用户操作 |
+| Day 103 | 部署说明与作品集 | 依赖、README、`DEPLOYMENT.md`、`PORTFOLIO.md` | 完成；公网已验证 |
 
 ### 当前已知小问题（后续按需修复）
 

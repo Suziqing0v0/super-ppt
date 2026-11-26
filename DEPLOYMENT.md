@@ -1,5 +1,8 @@
 # Super PPT 部署说明
 
+**当前公网应用**：
+[https://super-ppt-kpcvhtoahtitynwunugtvw.streamlit.app/](https://super-ppt-kpcvhtoahtitynwunugtvw.streamlit.app/)
+
 ## 本地运行
 
 ```powershell

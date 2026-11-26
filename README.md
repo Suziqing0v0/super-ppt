@@ -2,6 +2,9 @@
 
 输入一个主题，自动生成一份 5 页 PPT。
 
+**在线使用**：
+[https://super-ppt-kpcvhtoahtitynwunugtvw.streamlit.app/](https://super-ppt-kpcvhtoahtitynwunugtvw.streamlit.app/)
+
 作品集说明见 [`PORTFOLIO.md`](PORTFOLIO.md)，部署步骤见
 [`DEPLOYMENT.md`](DEPLOYMENT.md)。
 
